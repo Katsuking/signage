@@ -1,45 +1,38 @@
 
-###################################
-### 事前作業
-# ポリシーの変更
-# Set-ExecutionPolicy RemoteSigned
-
-#### vlc 側の設定
-# vlc 側で字幕表示をとめる
-# 動画再生時に画面を最大にすること
-###################################
 
 ###############################################
-# ENV
-$OutputEncoding='utf-8' # 意味ないかも
+# ENV]
+
 $mmdd = Get-Date -Format "MMdd"
-$LOGFILE = "./logs/$mmdd.log"
-# なければ, 202403のようなyyyymd のファイルを作成
-# アセンブリの読み込み
+$LOGFILE = "$PSScriptRoot/logs/$mmdd.log"
+# to show a message
 Add-Type -Assembly System.Windows.Forms
 $EXTS = @('.mp4', '.mkv', '.mov', '.avi', '.wmv')
 $VLC = '"C:\Program Files\VLC\vlc.exe"'
-$PLAYLIST = "./playlist.m3u"
+$PLAYLIST = "$PSScriptRoot/playlist.m3u"
 
-# 現在のディレクトリのパスを取得
-$cwd = (Convert-Path .)
 ###############################################
 
-# Log の書き込み
+# create new file if not exists
+if (-not (Test-Path $LOGFILE)) {
+  New-Item -Path $LOGFILE -ItemType File
+}
+
+# log
 function Log($text) {
   $formatted_date = Get-Date -Format "yyyy/MM/dd_HH:mm:ss"
   Write-Output "$formatted_date $text" >> $LOGFILE
 }
 
-# usbの存在確認 -> なければメッセージ表示 -> 異常終了
+# Does usb exist? -> no: showing a message -> exit 1
 function init() {
   $usb = (Get-Volume |
     Where-Object drivetype -eq removable).DriveLetter
 
   if ($null -eq $usb) {
-    # ログの記録 -> txtファイルに記載
+    # add log info to  txt
     Log("USB not found!!!!")
-    # メッセージボックスの表示
+    # show messages
     [System.Windows.Forms.MessageBox]::Show("USB not found!!", "Error Message")
     Write-Error "USB is not found"
     exit 1
@@ -48,61 +41,48 @@ function init() {
   }
 }
 
-# usb の pathを取得
+# get the usb path
 function getUsbPath() {
   $FlashDrives = (get-volume | Where-Object drivetype -eq removable).DriveLetter
   $usb_root_dir = "$FlashDrives`:\"
   return $usb_root_dir
 }
 
-# ログの作成
-function Log($text) {
-  $formatted_date = Get-Date -Format "yyyy/MM/dd_HH:mm:ss"
-  Write-Output "$formatted_date $text" >> $LOGFILE
-}
-
-# playlist 作成 -> 動画再生
+# create a playlist based on usb -> play videos
 function playAllInPlayList() {
-  # M3Uファイルのヘッダー
+  # M3U file header
   $header = "#EXTM3U"
   Set-Content -Path $PLAYLIST -Value $header
 
-  # usb pathの取得
+  # get the usb path
   $usb_root_dir = getusbPath
 
-  # USBにある各動画をplaylistに追記
+  # add video paths to playlist.m3u.
   Get-ChildItem $usb_root_dir |
     Where-Object { $EXTS -contains $_.Extension } |
     ForEach-Object { $_.FullName } |
     ForEach-Object {
       Add-Content -Path $PLAYLIST -Value $_ }
 
-  # 3回数リトライ
-  $retryCount = 0
-  while ($retryCount -lt 4) {
-    try {
-      $proc = Start-Process -FilePath $VLC -ArgumentList $PLAYLIST, "-I dummy", "--fullscreen" ,"--loop" -passthru # , "--loop"
-      # start-sleep -seconds 5 # プロセスIDを取得できるか確認
-      # stop-process -id $proc.id #
-      if ($Null -eq $proc.id) {
-        $retryCount += 1
-        Log("could not get VLC process id. retry count:$retryCount")
-        continue
-      } else {
-        return $proc.id
-        break
-      }
-    }
-    catch {
-      Log("Could not play all playlist. retry count: $retryCount ")
-      $retryCount += 1
+  try {
+    $proc = Start-Process -FilePath $VLC -ArgumentList $PLAYLIST, "-I dummy", "--fullscreen" ,"--loop" -passthru # , "--loop"
+
+    if ($Null -eq $proc.id) {
+      Write-Output $proc.Id
+      Log("could not get VLC process id. retry count:$retryCount")
+      continue
+    } else {
+      return $proc.id
+      break
     }
   }
-
+  catch {
+    Log("Could not play all playlist. retry count: $retryCount ")
+  }
 }
 
 function main() {
-  # USBの存在確認と画面の警告表示
+  # Does usb exists? -> no: showing messages
   try {
     init
   }
@@ -110,18 +90,29 @@ function main() {
     Log("Excuting init is failed.")
     exit 1
   }
-  # 動画再生
-  $procId = playAllInPlayList
-  return $procId
+
+  # try 3 times
+  $retryCount = 0
+  while ($retryCount -lt 4) {
+    # play videos
+    $procId = playAllInPlayList
+    if ( $null -eq $procId) { # failed
+      Log("failed to play. $retryCount")
+      $retryCount += 1
+    } else {
+      return $procId
+      break # success
+    }
+  }
 }
 
-# 無限に動くので、一定時間で止まるの
+# prevent an inflinite loop.
 $procId = main
-start-sleep -seconds 50 # 50秒だけ 動画を流す
+start-sleep -seconds 20 # play for 50 secs
 stop-process -id $procId
 
-# 無限ループ
-# $threshold = 1073741824  # 1GBをバイトで表した値
+# an infinite loop
+# $threshold = 1073741824  # 1 GB bytes
 
 # while ($true) {
 #     $memoryUsage = (Get-Process -Id $procId).WorkingSet
