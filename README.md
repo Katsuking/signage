@@ -12,6 +12,11 @@ logs はあえて.gitignore には入れない
 - エラーメッセージが小さい
 - プロセスが異常時に再リトライできるか
 
+### 事前作業
+
+ポリシーの変更
+Set-ExecutionPolicy RemoteSigned
+
 ### 要件
 
 - USB 内の動画利用する
@@ -19,3 +24,18 @@ logs はあえて.gitignore には入れない
 - USB がない場合は、エラーメッセージを画面に出すこと
 
 などなど
+
+## vlc の設定
+
+- vlc 側で字幕表示をとめる
+
+- 動画再生時に画面を最大にすること
+
+### shell:startup で起動させる
+
+-WindowStyle Hidden でコンソールをだしっぱなしにしないようにする
+絶対パスを渡す
+
+```bat
+powershell -WindowStyle Hidden -ExecutionPolicy Unrestricted -File C:\Users\oplan\Documents\signage\play.ps1
+```
