@@ -1,14 +1,14 @@
 
 
 ###############################################
-# ENV]
+# ENV
 
 $mmdd = Get-Date -Format "MMdd"
 $LOGFILE = "$PSScriptRoot/logs/$mmdd.log"
 # to show a message
 Add-Type -Assembly System.Windows.Forms
 $EXTS = @('.mp4', '.mkv', '.mov', '.avi', '.wmv')
-$VLC = '"C:\Program Files\VLC\vlc.exe"'
+$VLC = "C:\Program Files\VLC\vlc.exe"
 $PLAYLIST = "$PSScriptRoot/playlist.m3u"
 
 ###############################################
