@@ -1,5 +1,5 @@
 @echo off
 setlocal
 
-rem powershellファイルの実行
+rem usb にある動画をループするシェル
 powershell -WindowStyle Hidden -ExecutionPolicy Unrestricted -File C:\Users\oplan\Documents\signage\play.ps1

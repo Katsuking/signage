@@ -3,7 +3,7 @@
 以下は メモ
 
 powershell だけ使ってやってみる
-logs はあえて.gitignore には入れない
+logs はあえて `.gitignore` には入れない
 
 ### Todos
 
@@ -15,7 +15,7 @@ logs はあえて.gitignore には入れない
 ### 事前作業
 
 ポリシーの変更
-Set-ExecutionPolicy RemoteSigned
+`Set-ExecutionPolicy RemoteSigned`
 
 ### 要件
 
@@ -25,17 +25,35 @@ Set-ExecutionPolicy RemoteSigned
 
 などなど
 
-## vlc の設定
+## VLC の設定
 
-- vlc 側で字幕表示をとめる
+- VLC 側で字幕表示をとめる
 
 - 動画再生時に画面を最大にすること
 
 ### shell:startup で起動させる
 
--WindowStyle Hidden でコンソールをだしっぱなしにしないようにする
+`-WindowStyle Hidden` でコンソールをだしっぱなしにしないようにする
 絶対パスを渡す
 
 ```bat
 powershell -WindowStyle Hidden -ExecutionPolicy Unrestricted -File C:\Users\oplan\Documents\signage\play.ps1
+```
+
+### システムアプリを削除
+
+消していいのかは、正直わかりません。
+
+下記の例では、MS store を削除
+
+`Get-appxpackage` を使用すると、パッケージがたくさん取得できます。
+
+```powershell
+Get-appxpackage *windowsstore* | Remove-AppxPackage
+```
+
+復元する場合、下記の通りです。
+
+```powershell
+Get-AppXPackage *WindowsStore* -AllUsers | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
 ```
