@@ -1,4 +1,4 @@
-	#メモ帳を終了
+	#vlcを終了
 	$pro = Get-process C:\Program Files\VLC\vlc.exe
 	if ( $pro -ne $null ) {
 	Stop-process -name C:\Program Files\VLC\vlc.exe
