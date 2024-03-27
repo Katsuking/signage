@@ -1,4 +1,4 @@
-# シンプルなサイネージを windows で作る
+## シンプルなサイネージを windows で作る
 
 以下は メモ
 
@@ -31,7 +31,7 @@ logs はあえて `.gitignore` には入れない
 
 - 動画再生時に画面を最大にすること
 
-### shell:startup で起動させる
+## shell:startup で起動させる
 
 `-WindowStyle Hidden` でコンソールをだしっぱなしにしないようにする
 絶対パスを渡す
@@ -56,4 +56,12 @@ Get-appxpackage *windowsstore* | Remove-AppxPackage
 
 ```powershell
 Get-AppXPackage *WindowsStore* -AllUsers | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
+```
+
+### USB log が保存されている場合
+
+管理者権限 で開く
+
+```powershell
+Get-WinEvent -path "C:\Windows\System32\winevt\Logs\Microsoft-Windows-DriverFrameworks-UserMode%4Operational.evtx"
 ```
