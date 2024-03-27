@@ -1,5 +1,7 @@
 . "env.ps1"
-. $logpass
+. $logPass
+. $allertDeletePass
+
 
 
 
@@ -23,29 +25,9 @@ if (-not (Test-Path $LOGFILE)) {
 
 
 
-# Does usb exist? -> no: showing a message -> exit 1
-function init() {
-  $usb = (Get-Volume |
-    Where-Object drivetype -eq removable).DriveLetter
 
-  if ($null -eq $usb) {
-    # add log info to  txt
-    Log("USB not found!!!!")
-    # show messages
-    [System.Windows.Forms.MessageBox]::Show("USB not found!!", "Error Message")
-    Write-Error "USB is not found"
-    exit 1
-  } else {
-    Log("USB is connected.")
-  }
-}
 
-# get the usb path
-function getUsbPath() {
-  $FlashDrives = (get-volume | Where-Object drivetype -eq removable).DriveLetter
-  $usb_root_dir = "$FlashDrives`:\"
-  return $usb_root_dir
-}
+
 
 # create a playlist based on usb -> play videos
 function playAllInPlayList() {
