@@ -1,32 +1,13 @@
 . "env.ps1"
-. $logPass
-. $allertDeletePass
+. $LOGPASS
+. $ALLERTDELETEPASS
+. $LOGINPASS
 
-
-
-
-###############################################
-# ENV
-
-$mmdd = Get-Date -Format "MMdd"
-$LOGFILE = "$PSScriptRoot/logs/$mmdd.log"
-# to show a message
-Add-Type -Assembly System.Windows.Forms
-$EXTS = @('.mp4', '.mkv', '.mov', '.avi', '.wmv')
-$VLC = "C:\Program Files\VLC\vlc.exe"
-$PLAYLIST = "$PSScriptRoot/playlist.m3u"
-
-###############################################
-
-# create new file if not exists
-if (-not (Test-Path $LOGFILE)) {
-  New-Item -Path $LOGFILE -ItemType File
+function getUsbPath() {
+  $FlashDrives = (get-volume | Where-Object drivetype -eq removable).DriveLetter
+  $usb_root_dir = "$FlashDrives`:\"
+  return $usb_root_dir
 }
-
-
-
-
-
 
 
 # create a playlist based on usb -> play videos
@@ -62,15 +43,15 @@ function playAllInPlayList() {
   }
 }
 
+
+
 function main() {
-  # Does usb exists? -> no: showing messages
-  try {
-    init
+
+  # create new file if not exists
+  if (-not (Test-Path $LOGFILE)) {
+    New-Item -Path $LOGFILE -ItemType File
   }
-  catch {
-    Log("Excuting init is failed.")
-    exit 1
-  }
+  
 
   # try 3 times
   $retryCount = 0
