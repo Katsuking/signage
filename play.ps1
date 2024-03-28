@@ -1,3 +1,6 @@
+. "env.ps1"
+. $logpass
+
 
 
 ###############################################
@@ -18,11 +21,7 @@ if (-not (Test-Path $LOGFILE)) {
   New-Item -Path $LOGFILE -ItemType File
 }
 
-# log
-function Log($text) {
-  $formatted_date = Get-Date -Format "yyyy/MM/dd_HH:mm:ss"
-  Write-Output "$formatted_date $text" >> $LOGFILE
-}
+
 
 # Does usb exist? -> no: showing a message -> exit 1
 function init() {
