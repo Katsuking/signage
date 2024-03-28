@@ -44,7 +44,6 @@ function playAllInPlayList() {
 }
 
 
-
 function main() {
 
   # create new file if not exists
