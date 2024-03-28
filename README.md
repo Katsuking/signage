@@ -1,3 +1,7 @@
+## 参考
+
+[USBの抜き差し](https://jo-sys.net/usb-log/)
+
 ## シンプルなサイネージを windows で作る
 
 以下は メモ
