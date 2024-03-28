@@ -65,3 +65,11 @@ Get-AppXPackage *WindowsStore* -AllUsers | Foreach {Add-AppxPackage -DisableDeve
 ```powershell
 Get-WinEvent -path "C:\Windows\System32\winevt\Logs\Microsoft-Windows-DriverFrameworks-UserMode%4Operational.evtx"
 ```
+
+### schedular から VLC を止める
+
+`-Force` が必須かも
+
+```powershell
+Stop-Process -Force -Name "VLC" >$null 2>&1
+```
