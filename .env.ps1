@@ -1,1 +1,0 @@
-$logpass = ".\util\log.ps1"
