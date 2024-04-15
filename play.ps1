@@ -1,6 +1,3 @@
-. "env.ps1"
-. $logpass
-
 
 
 ###############################################
@@ -21,7 +18,11 @@ if (-not (Test-Path $LOGFILE)) {
   New-Item -Path $LOGFILE -ItemType File
 }
 
-
+# log
+function Log($text) {
+  $formatted_date = Get-Date -Format "yyyy/MM/dd_HH:mm:ss"
+  Write-Output "$formatted_date $text" >> $LOGFILE
+}
 
 # Does usb exist? -> no: showing a message -> exit 1
 function init() {
@@ -107,7 +108,7 @@ function main() {
 
 # prevent an inflinite loop.
 $procId = main
-start-sleep -seconds 20 # play for 50 secs
+start-sleep -seconds 50 # play for 50 secs
 stop-process -id $procId
 
 # an infinite loop
@@ -121,4 +122,6 @@ stop-process -id $procId
 #     }
 #     Start-Sleep -Seconds 5
 # }
+
+
 
